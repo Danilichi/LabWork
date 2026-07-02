@@ -7,8 +7,118 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+<<<<<<< Updated upstream:Assets/Art/Models/DigOscy.fbx.meta
       name: oscylograph
     second: {fileID: 2100000, guid: 87461d373c4fcbc4caae6f19d037c46b, type: 2}
+=======
+      name: 01 - Default
+    second: {fileID: 2100000, guid: 0013f93cedcc47d41923f883900c3de9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 02 - Default
+    second: {fileID: 2100000, guid: af7aa576f4d0edf4bb1ff53bf60778bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 02 - Default.001
+    second: {fileID: 2100000, guid: 1f4afac2a34c8a24abc54fd45855cba6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 03 - Default
+    second: {fileID: 2100000, guid: 1fa6d1c86dc6aff4aa3eab732da5e400, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 03 - Default.001
+    second: {fileID: 2100000, guid: 0fa7826512971a64dbc7232cc891452c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 04 - Default
+    second: {fileID: 2100000, guid: 672c194c8263ab44f9deda7777c96b20, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 04 - Default.001
+    second: {fileID: 2100000, guid: bf1adf232c6717c47be926534f266b26, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 05 - Default
+    second: {fileID: 2100000, guid: 61cdd66966fa75447b02e5744421e638, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 05 - Default.001
+    second: {fileID: 2100000, guid: 84130b1431587a94b8327490b2693c9a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 06 - Default
+    second: {fileID: 2100000, guid: b6382247c8922c54d8718978ae8d39e2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 07 - Default
+    second: {fileID: 2100000, guid: 3f850b46ff823db4aa93123af2e82d4f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 07 - Default.002
+    second: {fileID: 2100000, guid: 650bda98dea2fa046b8cdf8baef9de09, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 08 - Default
+    second: {fileID: 2100000, guid: 1079c746b662a5f44b3c311bea37c971, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 08 - Default.001
+    second: {fileID: 2100000, guid: d0684b4501c39444faaa00110e27e022, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 09 - Default
+    second: {fileID: 2100000, guid: fdc60d3ac5356e0458ac38a5480c67e5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 09 - Default.001
+    second: {fileID: 2100000, guid: 25e6fc2020b769a48aad3b7265978d53, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 10 - Default
+    second: {fileID: 2100000, guid: 73e43aae7a708264fbdbf36229c51be2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 10 - Default.001
+    second: {fileID: 2100000, guid: 8411c102dd6f56e44bf8f7fbb79ab9fd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 11 - Default
+    second: {fileID: 2100000, guid: 1b9e16d237b09a946821e86b9ef72f43, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 11 - Default.002
+    second: {fileID: 2100000, guid: 50e21ecffee72524c9725ed28bf91452, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #13
+    second: {fileID: 2100000, guid: ee56e1c0cf1753d488e73e993d0bf0a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #67
+    second: {fileID: 2100000, guid: 04885471a27022040b59d80482bdf3ef, type: 2}
+>>>>>>> Stashed changes:Assets/Art/Models/Oscilloscope_SignalGenerator.fbx.meta
   materials:
     materialImportMode: 2
     materialName: 0

@@ -19,17 +19,16 @@ public class OscilloscopeCore : MonoBehaviour
     [SerializeField] private VRKnob xPosKnob;
 
     [Header("Блок Триггера (Синхронизация)")]
-    [SerializeField] private VRKnob triggerLevelKnob; // Ручка уровня синхронизации (в Вольтах!)
-    [SerializeField] public TriggerEdge triggerEdge = TriggerEdge.Rising; // Кнопка переключения фронта
-    // Временно жестко привяжем триггер к Каналу 1 (обычно есть переключатель Source)
+    [SerializeField] private VRKnob triggerLevelKnob;
+    [SerializeField] public TriggerEdge triggerEdge = TriggerEdge.Rising;
 
     [Header("Режим дисплея")]
     [SerializeField] private DisplayMode currentMode = DisplayMode.YT;
 
     [Header("Курсоры")]
     public CursorMode cursorMode = CursorMode.Off;
-    [SerializeField] private VRKnob cursor1Knob; // Ползунок 1 (от -5 до +5)
-    [SerializeField] private VRKnob cursor2Knob; // Ползунок 2
+    [SerializeField] private VRKnob cursor1Knob;
+    [SerializeField] private VRKnob cursor2Knob;
 
     [Header("Настройки экрана")]
     [SerializeField] private int resolution = 512;
@@ -59,16 +58,23 @@ public class OscilloscopeCore : MonoBehaviour
         else if (currentMode == DisplayMode.XY)
             GenerateXYBuffer();
 
-        OnGraphReady?.Invoke(bufferCH1, bufferCH2, cursorMode,
-            cursor1Knob != null ? cursor1Knob.Value : 0f,
-            cursor2Knob != null ? cursor2Knob.Value : 0f);
+        // Читаем курсоры 1 раз за кадр
+        float c1 = cursor1Knob != null ? cursor1Knob.Value : 0f;
+        float c2 = cursor2Knob != null ? cursor2Knob.Value : 0f;
+        OnGraphReady?.Invoke(bufferCH1, bufferCH2, cursorMode, c1, c2);
     }
 
     private void GenerateYTBuffer()
     {
+        // 1. ОПТИМИЗАЦИЯ: Читаем все крутилки ОДИН РАЗ до начала циклов
         float tDiv = timeDivKnob != null ? timeDivKnob.Value : 1f;
         float xTimeOffset = xPosKnob != null ? xPosKnob.Value * tDiv : 0f;
         float trigLevel = triggerLevelKnob != null ? triggerLevelKnob.Value : 0f;
+
+        float vDiv1 = ch1.VoltsPerDiv;
+        float yOff1 = ch1.YOffset;
+        float vDiv2 = ch2.HasSource ? ch2.VoltsPerDiv : 1f;
+        float yOff2 = ch2.YOffset;
 
         float totalTimeOnScreen = screenGridWidth * tDiv;
         float timeStep = totalTimeOnScreen / (resolution - 1);
@@ -79,7 +85,6 @@ public class OscilloscopeCore : MonoBehaviour
         float searchStep = totalTimeOnScreen / 200f;
         bool triggerFound = false;
 
-        // Поиск триггера (смотрим в реальное время)
         float currentRealTime = Time.time - xTimeOffset;
 
         for (int i = 0; i < 300; i++)
@@ -112,11 +117,8 @@ public class OscilloscopeCore : MonoBehaviour
             }
         }
 
-        // ИСПРАВЛЕНИЕ YT: Если триггер не найден (или выключен), 
-        // имитируем реальный аналоговый "свободный бег" луча (Free Run).
         if (!triggerFound)
         {
-            // Если предыдущий луч дорисовал экран, стартуем новый
             if (Time.time >= lastSweepTime + totalTimeOnScreen)
             {
                 lastSweepTime = Time.time;
@@ -125,10 +127,12 @@ public class OscilloscopeCore : MonoBehaviour
         }
         else
         {
-            lastSweepTime = startTime; // Синхронизируем внутренний таймер с триггером
+            lastSweepTime = startTime;
         }
 
         float sumCH1 = 0f, sumCH2 = 0f;
+
+        // 2. ОПТИМИЗАЦИЯ: Избегаем свойств в цикле сэмплирования
         for (int i = 0; i < resolution; i++)
         {
             float t = startTime + (i * timeStep);
@@ -136,18 +140,22 @@ public class OscilloscopeCore : MonoBehaviour
             rawBufferCH1[i] = ch1.GetRawVoltage(t);
             sumCH1 += rawBufferCH1[i];
 
-            rawBufferCH2[i] = ch2.GetRawVoltage(t);
-            sumCH2 += rawBufferCH2[i];
+            if (ch2.HasSource)
+            {
+                rawBufferCH2[i] = ch2.GetRawVoltage(t);
+                sumCH2 += rawBufferCH2[i];
+            }
         }
 
         float avgCH1 = sumCH1 / resolution;
         float avgCH2 = sumCH2 / resolution;
 
+        // 3. ОПТИМИЗАЦИЯ: Передаем кэшированные vDiv и yOff, не трогая Unity Transform
         for (int i = 0; i < resolution; i++)
         {
             float xPos = startX + (i * xStep);
-            bufferCH1[i] = new Vector3(xPos, ch1.GetScreenYPosition(rawBufferCH1[i], avgCH1), 0f);
-            bufferCH2[i] = ch2.HasSource ? new Vector3(xPos, ch2.GetScreenYPosition(rawBufferCH2[i], avgCH2), 0f) : Vector3.zero;
+            bufferCH1[i] = new Vector3(xPos, ch1.GetScreenYPosition(rawBufferCH1[i], avgCH1, vDiv1, yOff1), 0f);
+            bufferCH2[i] = ch2.HasSource ? new Vector3(xPos, ch2.GetScreenYPosition(rawBufferCH2[i], avgCH2, vDiv2, yOff2), 0f) : Vector3.zero;
         }
     }
 
@@ -155,9 +163,14 @@ public class OscilloscopeCore : MonoBehaviour
     {
         if (!ch2.HasSource) return;
 
+        // Кэшируем
         float tDiv = timeDivKnob != null ? timeDivKnob.Value : 1f;
-        float totalTimeToDraw = screenGridWidth * tDiv;
+        float vDiv1 = ch1.VoltsPerDiv;
+        float yOff1 = ch1.YOffset;
+        float vDiv2 = ch2.VoltsPerDiv;
+        float yOff2 = ch2.YOffset;
 
+        float totalTimeToDraw = screenGridWidth * tDiv;
         float timeStep = totalTimeToDraw / (resolution - 1);
         float startTime = Time.time;
 
@@ -168,8 +181,8 @@ public class OscilloscopeCore : MonoBehaviour
             float rawCH1 = ch1.GetRawVoltage(t);
             float rawCH2 = ch2.GetRawVoltage(t);
 
-            float yPos = ch1.GetScreenYPosition(rawCH1, 0f);
-            float xPos = ch2.GetScreenYPosition(rawCH2, 0f);
+            float yPos = ch1.GetScreenYPosition(rawCH1, 0f, vDiv1, yOff1);
+            float xPos = ch2.GetScreenYPosition(rawCH2, 0f, vDiv2, yOff2);
 
             bufferCH1[i] = new Vector3(xPos, yPos, 0f);
             bufferCH2[i] = Vector3.zero;

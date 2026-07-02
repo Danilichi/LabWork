@@ -2,8 +2,15 @@ using UnityEngine;
 
 public class VRKnob : MonoBehaviour
 {
-    [Tooltip("Текущее значение крутилки")]
-    [SerializeField] private float _currentValue = 1f;
+    [SerializeField] private float _minValue = 1f;
+    [SerializeField] private float _maxValue = 5f;
 
-    public float Value => _currentValue;
+    [SerializeField] private float _fallbackValue;
+
+    [SerializeField] private RotationInteractable _associatedRotationIteractable;
+
+    public float Value => 
+        _associatedRotationIteractable == null ? 
+        _fallbackValue : 
+        _minValue + ((_maxValue - _minValue) * _associatedRotationIteractable.CalculateRotationProgress());
 }
