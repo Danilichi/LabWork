@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: c3f8d4a12a75afa40877950325250e61
+guid: 70e0bf80aac8fea47b99f8ede5e297d8
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: oscylograph
+    second: {fileID: 2100000, guid: 87461d373c4fcbc4caae6f19d037c46b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
