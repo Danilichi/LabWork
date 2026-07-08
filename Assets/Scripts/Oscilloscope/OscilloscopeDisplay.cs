@@ -7,6 +7,7 @@ public class OscilloscopeDisplay : MonoBehaviour
     [Header("Рендереры графиков")]
     [SerializeField] private LineRenderer lineRendererCH1;
     [SerializeField] private LineRenderer lineRendererCH2;
+    [SerializeField] private LineRenderer lineRendererMath;
 
     [Header("Рендереры Курсоров")]
     [SerializeField] private LineRenderer cursor1Line;
@@ -20,6 +21,7 @@ public class OscilloscopeDisplay : MonoBehaviour
     {
         SetupLine(lineRendererCH1, 0.05f);
         SetupLine(lineRendererCH2, 0.05f);
+        SetupLine(lineRendererMath, 0.05f);
 
         // Курсоры делаем чуть тоньше, чтобы они не перекрывали график
         SetupLine(cursor1Line, 0.03f);
@@ -39,22 +41,43 @@ public class OscilloscopeDisplay : MonoBehaviour
     }
 
     // ИЗМЕНЕНО: Принимаем новые параметры курсоров
-    private void DrawGraph(Vector3[] pointsCH1, Vector3[] pointsCH2, CursorMode cMode, float c1Pos, float c2Pos)
+    // Добавили третий массив: Vector3[] pointsMath
+    private void DrawGraph(Vector3[] pointsCH1, Vector3[] pointsCH2, Vector3[] pointsMath, CursorMode cMode, float c1Pos, float c2Pos)
     {
-        // 1. Отрисовка графиков
+        // 1. Отрисовка Канала 1 (Желтый)
         if (pointsCH1 != null && pointsCH1.Length > 0 && lineRendererCH1 != null)
         {
-            lineRendererCH1.positionCount = pointsCH1.Length;
+            if (lineRendererCH1.positionCount != pointsCH1.Length)
+                lineRendererCH1.positionCount = pointsCH1.Length;
             lineRendererCH1.SetPositions(pointsCH1);
         }
 
+        // 2. Отрисовка Канала 2 (Синий)
         if (pointsCH2 != null && pointsCH2.Length > 0 && lineRendererCH2 != null)
         {
-            lineRendererCH2.positionCount = pointsCH2.Length;
+            if (lineRendererCH2.positionCount != pointsCH2.Length)
+                lineRendererCH2.positionCount = pointsCH2.Length;
             lineRendererCH2.SetPositions(pointsCH2);
         }
 
-        // 2. Отрисовка Курсоров
+        // 3. Отрисовка Математики (Фиолетовый)
+        if (lineRendererMath != null)
+        {
+            // Проверяем, есть ли данные в массиве математики (если MATH выключен, Ядро заполняет его нулями)
+            if (pointsMath != null && pointsMath.Length > 0 && core.IsMathEnabled && core.CurrentMode == DisplayMode.YT)
+            {
+                if (lineRendererMath.positionCount != pointsMath.Length)
+                    lineRendererMath.positionCount = pointsMath.Length;
+                lineRendererMath.SetPositions(pointsMath);
+            }
+            else
+            {
+                // Если кнопка MATH отжата или включен Лиссажу - скрываем линию
+                lineRendererMath.positionCount = 0;
+            }
+        }
+
+        // 4. Отрисовка Курсоров
         DrawCursors(cMode, c1Pos, c2Pos);
     }
 
@@ -103,6 +126,7 @@ public class OscilloscopeDisplay : MonoBehaviour
 
     void OnDestroy()
     {
-        if (core != null) core.OnGraphReady -= DrawGraph;
+        if (core != null) 
+            core.OnGraphReady -= DrawGraph;
     }
 }
